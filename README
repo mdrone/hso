@@ -1,0 +1,6 @@
+#!/usr/bin/env less
+
+Noten der Hochschule abholen
+
+Aufruf:
+    ./hso_noten <username> <password>

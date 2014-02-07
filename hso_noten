@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use WWW::Mechanize;
+use HTML::TableExtract;
+
+my $alias           = "Windows IE 6";
+my $start_url       = "https://qisserver.hs-offenburg.de/qisserver/rds?state=user&type=0";
+my $link_pattern    = "Notenuebersicht";
+my $logout          = "logout";
+my $form            = "loginform";
+
+my $username;
+my $password;
+
+if (@ARGV < 2) {
+    die "Usage: ./<program> <username> <password>";
+} else {
+    $username = $ARGV[0] or die "Username";
+    $password = $ARGV[1] or die "Password";
+}
+
+my $browser = WWW::Mechanize->new(
+        stack_depth => 0,
+        timeout     => 180,
+        autocheck   => 1,
+        cookie_jar  => {}, 
+        );
+
+
+$browser->agent_alias($alias);
+$browser->get($start_url);
+
+$browser->form_name($form);
+$browser->field('username', $username);
+$browser->field('password', $password);
+$browser->submit();
+$browser->follow_link(text_regex => qr/$link_pattern/i, n => 1)
+            or die "Kann Link nicht finden\n";
+
+my $html_content    = $browser->content();
+
+my $table_extract   = new HTML::TableExtract(headers => [qw(nummer text Semester Note Status)] );
+
+$table_extract->parse($html_content);
+
+foreach my $table_states ($table_extract->table_states) {
+    foreach my $row ($table_states->rows) {
+        printf("%10s :: %-40s :: %-25s :: %-10s :: %-10s\n", @$row);
+    }
+}
+
+$browser->follow_link(text_regex => qr/$logout/i, n => 1)
+            or die "Kann Link nicht finden\n";
+
