@@ -1,6 +1,10 @@
 #!/usr/bin/env less
 
-Noten der Hochschule abholen
+Noten von der Hochschulseite abholen
+
+Benoetigt die Perl-Module
+    WWW::Mechanize
+    HTML::TableExtract
 
 Aufruf:
     ./hso_noten <username> <password>
