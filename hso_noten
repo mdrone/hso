@@ -38,14 +38,14 @@ $browser->field('username', $username);
 $browser->field('password', $password);
 $browser->submit();
 
+$browser->follow_link(text_regex => qr/$link_pattern/i, n => 1)
+            or die "Kann Link nicht finden\n";
+
 my $link = $browser->find_link (text_regex => qr/IT-Sicherheit/i, n => 1);
 
 if (defined $link) {
     $browser->get($link);
 }
-
-$browser->follow_link(text_regex => qr/$link_pattern/i, n => 1)
-            or die "Kann Link nicht finden\n";
 
 my $html_content    = $browser->content();
 
