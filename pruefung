@@ -89,7 +89,7 @@ sub parse_content {
             if ($line =~ m/$current_semester (.*?) ([A-H][0-9]{3}.*?)\s+$/g) {
                 $lecture = $1;
                 $room = $2;
-            } elsif ($line =~ m/$current_semester (.*?)\s+/g) {
+            } elsif ($line =~ m/$current_semester (.*?)\s+$/g) {
                 $lecture = $1;
                 $room    = "room not set";
             }
