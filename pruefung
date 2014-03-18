@@ -7,7 +7,7 @@ use WWW::Mechanize;
 my $major     = "UN";
 my $semester  = 8;
 my $delimiter = "::";
-#my $releasedate;
+my $releasedate;
 
 if (@ARGV == 1) {
     $semester   = $ARGV[0];
@@ -31,6 +31,10 @@ $browser->agent_alias($alias);
 $browser->get($start_url);
 
 $html_content = $browser->content();
+
+if ($html_content =~ m/(Stand:\s+\d+.\d+.\d+)/g) {
+    print $releasedate = $1 . "\n";
+}
 
 #Holee fuck review
 $html_content =~ s/^\s+//mg;
