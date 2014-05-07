@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+_filepdf="plan.pdf"
+_filetext="plan.txt"
+_pattern="$1"
+
+if [[ $# < 1 ]]
+then
+    _pattern="UN4"
+fi
+
+wget -O $_filepdf http://www.hs-offenburg.de/uploads/media/UnternehmensundITSicherheit_Bachelor.pdf -q
+
+pdftotext $_filepdf -nopgbrk -layout -q -eol unix
+
+cat $_filetext | grep -E $_pattern
+
+rm $_filepdf $_filetext
