@@ -6,13 +6,13 @@ _pattern="$1"
 
 if [[ $# < 1 ]]
 then
-    _pattern="UN4"
+    _pattern="UN"
 fi
 
 wget -O $_filepdf http://www.hs-offenburg.de/uploads/media/UnternehmensundITSicherheit_Bachelor.pdf -q
 
 pdftotext $_filepdf -nopgbrk -layout -q -eol unix
 
-cat $_filetext | grep -E $_pattern
+cat $_filetext | grep -Ei $_pattern
 
 rm $_filepdf $_filetext
