@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use WWW::Mechanize;
 
+die "this ain't working anymore\n";
+
 my $major     = "UN";
 my $semester  = 8;
 my $delimiter = "::";
