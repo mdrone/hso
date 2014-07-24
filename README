@@ -8,3 +8,11 @@ Benoetigt die Perl-Module
 
 Aufruf:
     ./hso_noten <username> <password>
+
+
+Pythonskript fuer den neuen Notenverwaltungsserver
+Schnitt wird mit angezeigt
+    benoetigt Mechanize und beautifulsoup4
+
+    ./notenverwaltung <username> <password>
+    ToDo huebscher Output
