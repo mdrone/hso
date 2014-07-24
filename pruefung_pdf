@@ -13,6 +13,6 @@ wget -O $_filepdf http://www.hs-offenburg.de/uploads/media/UnternehmensundITSich
 
 pdftotext $_filepdf -nopgbrk -layout -q -eol unix
 
-cat $_filetext | grep -Ei $_pattern
+cat $_filetext | grep -Ei $_pattern | sed 's/^\s//'
 
 rm $_filepdf $_filetext
