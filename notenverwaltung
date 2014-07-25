@@ -1,8 +1,9 @@
 #!/usr/bin/python2.7
 
-import sys
-import mechanize
 import re
+import sys
+import string
+import mechanize
 import cookielib
 from bs4 import BeautifulSoup
 
@@ -10,9 +11,12 @@ def average (url, browser):
     temp = browser
     response = temp.open(url)
     soup = BeautifulSoup(response)
-    table = soup.table.extract()
-    table = soup.table.extract()
-    table = soup.table.extract()
+    try:
+        table = soup.table.extract()
+        table = soup.table.extract()
+        table = soup.table.extract()
+    except (AttributeError, NameError, TypeError):
+        return "N/A"
 
     for rows in table.findAll('tr'):
         average_grade = ""
@@ -25,8 +29,6 @@ def average (url, browser):
         return "N/A"
 
 def print_line (line):
-    #line = line.split(" :: ")
-    #print "{0:<10} {0:<10}".format(line)
     print line
 
 if len(sys.argv) < 2:
@@ -71,31 +73,25 @@ table                               = soup.table.extract()
 for rows in table.findAll('tr'):
     line = ""
     for columns in rows.findAll('td'):
-        line += columns.getText()
+        line += columns.getText() + " :: "
         for link in columns.findAll('a'):
             url = link.get('href')
             line += "(Schnitt: " + average(url, browser) + ")"
     line = re.sub("\n", "", line)
     line = re.sub("^\s+", "", line)
-    line = re.sub("\s+$", "", line)
-    line = re.sub("\s\s+", " :: ", line)
-    line = re.sub("\s\s+", " :: ", line)
-    line = re.sub(" :: \d :: \d{2}.\d{2}\.\d{4}$", "", line)
-    line = re.sub(" :: \d$", "", line)
-    #if re.search("^UIS-\d\d\d\s", line):
-        #print ""
+    line = re.sub("\s*$", "", line)
+    line = re.sub("\s\s+", " ", line)
+    line = re.sub("^(.*? :: .*? ::.*?::.*?::.*?::.*?::).*$", "\\1", line)
+    line = re.sub(" ::$", "", line)
+
     if re.search("Zwischen", line):
         print_line(line)
     if re.search("Studienabschnitt", line):
         print
-        #print split_line(line)
         print_line(line)
         print
     if not re.match("^UIS-\d\d\s", line) and not re.match("^UIS-\d\d\d\s", line):
         print_line(line)
-        #print line.split("::")
-    #if re.search("^UIS-\d\d\d\s", line):
-        #print ""
 
 url                                 = browser.find_link(text_regex = re.compile(logout))
 response                            = browser.follow_link(url)
