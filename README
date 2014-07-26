@@ -1,18 +1,35 @@
 #!/usr/bin/env less
 
-Noten von der Hochschulseite abholen
+Noten von der Hochschulseite abholen:
+--
 
-Benoetigt die Perl-Module
+Perl-Skript fuer alten Notenserver
+Benoetigt die Perl-Module:
     WWW::Mechanize
     HTML::TableExtract
 
 Aufruf:
-    ./hso_noten <username> <password>
+    ./noten <username> <password>
 
+--
 
-Pythonskript fuer den neuen Notenverwaltungsserver
-Schnitt wird mit angezeigt
-    benoetigt Mechanize und beautifulsoup4
+Python-Skript fuer den neuen Notenserver
+Benoetigt: 
+    Mechanize und beautifulsoup4
 
     ./notenverwaltung <username> <password>
-    ToDo huebscher Output
+
+###########################################################
+
+Pruefungsplan abholen:
+Benoetigt:
+    wget, grep, pdftotext, sed
+
+Aufruf:
+    ./pruefung <GREP-PATTERN>
+
+Beispiel:
+    ./pruefung "(UN4|UN3|UN7)"
+    ./pruefung "(UN[437])"
+
+Ausgabe der Pruefungen von UNITS 3,4 und 7
