@@ -28,8 +28,33 @@ def average (url, browser):
     else :
         return "N/A"
 
-def print_line (line):
-    print line
+def beautify (line):
+    line = re.sub("\n", "", line)
+    line = re.sub("^\s+", "", line)
+    line = re.sub("\s*$", "", line)
+    line = re.sub("\s\s+", " ", line)
+    line = re.sub("^(.*? :: .*? ::.*?::.*?::.*?::.*?::).*$", "\\1", line)
+    line = re.sub(" ::$", "", line)
+    line = re.sub("^$", "", line)
+
+    splitted = line.encode("utf-8").split("::")
+    output         = ""
+    for n, word in enumerate(splitted):
+        word = re.sub("^\s*", "", word)
+        word = re.sub("\s*$", "", word)
+        if n == 0 :
+            output += "{0:<10s} :: ".format(word)
+        elif n == 1 :
+            output += "{0:<100s}".format(word)
+        elif n == 2 :
+            output += ":: {0:<15s}".format(word)
+        elif n == 3 :
+            output += ":: {0:<20s}".format(word)
+        elif n == 4 :
+            output += ":: {0:<10s}".format(word)
+        else :
+            output += ":: {0:>10s}".format(word)
+    return output
 
 if len(sys.argv) < 2:
     sys.exit('Usage: %s [username] [password]' % sys.argv[0])
@@ -73,25 +98,22 @@ table                               = soup.table.extract()
 for rows in table.findAll('tr'):
     line = ""
     for columns in rows.findAll('td'):
-        line += columns.getText() + " :: "
+        line += columns.getText()
         for link in columns.findAll('a'):
             url = link.get('href')
             line += "(Schnitt: " + average(url, browser) + ")"
-    line = re.sub("\n", "", line)
-    line = re.sub("^\s+", "", line)
-    line = re.sub("\s*$", "", line)
-    line = re.sub("\s\s+", " ", line)
-    line = re.sub("^(.*? :: .*? ::.*?::.*?::.*?::.*?::).*$", "\\1", line)
-    line = re.sub(" ::$", "", line)
+        line +=  " :: "
+    if line != "":
+        line = beautify(line)
 
     if re.search("Zwischen", line):
-        print_line(line)
+        print line
     if re.search("Studienabschnitt", line):
         print
-        print_line(line)
+        print line
         print
-    if not re.match("^UIS-\d\d\s", line) and not re.match("^UIS-\d\d\d\s", line):
-        print_line(line)
+    if not re.match("^\s*UIS-\d\d\s", line) and not re.match("^\s*UIS-\d\d\d\s", line):
+        print line
 
 url                                 = browser.find_link(text_regex = re.compile(logout))
 response                            = browser.follow_link(url)
