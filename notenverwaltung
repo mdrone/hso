@@ -116,6 +116,7 @@ for rows in table.findAll('tr') :
         print
     if not re.match("^\s*UIS-\d\d\s", line) and not re.match("^\s*UIS-\d\d\d\s", line) :
         print line
+print
 
 url                                 = browser.find_link(text_regex = re.compile(logout))
 response                            = browser.follow_link(url)

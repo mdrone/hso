@@ -22,6 +22,8 @@ if (@ARGV < 2) {
     $password = $ARGV[1] or die "Password";
 }
 
+print "alter Notenserver\n"
+
 my $browser = WWW::Mechanize->new(
         stack_depth => 0,
         timeout     => 180,
