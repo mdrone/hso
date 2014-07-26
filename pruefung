@@ -1,109 +1,18 @@
-#!/usr/bin/perl
+#!/usr/bin/env bash
 
-use strict;
-use warnings;
-use WWW::Mechanize;
+_filepdf="plan.pdf"
+_filetext="plan.txt"
+_pattern="$1"
 
-die "this ain't working anymore\n";
+if [[ $# < 1 ]]
+then
+    _pattern="UN"
+fi
 
-my $major     = "UN";
-my $semester  = 8;
-my $delimiter = "::";
-my $releasedate;
+wget -O $_filepdf http://www.hs-offenburg.de/uploads/media/UnternehmensundITSicherheit_Bachelor.pdf -q
 
-if (@ARGV == 1) {
-    $semester   = $ARGV[0];
-} elsif (@ARGV == 2) {
-    $major      = $ARGV[0];
-    $semester   = $ARGV[1];
-}
+pdftotext $_filepdf -nopgbrk -layout -q -eol unix
 
-my $alias           = "Windows IE 6";
-my $start_url       = "http://www.hs-offenburg.de/uploads/media/UnternehmensundITSicherheit_Bachelor.htm";
-my $html_content;
+cat $_filetext | grep -Ei $_pattern | sed 's/^\s//'
 
-my $browser = WWW::Mechanize->new(
-        stack_depth => 0,
-        timeout     => 180,
-        autocheck   => 1,
-        cookie_jar  => {}, 
-        );
-
-$browser->agent_alias($alias);
-$browser->get($start_url);
-
-$html_content = $browser->content();
-
-if ($html_content =~ m/(Stand:\s+\d+.\d+.\d+)/g) {
-    print $releasedate = $1 . "\n";
-}
-
-#Holee fuck review
-$html_content =~ s/^\s+//mg;
-$html_content =~ s/^\s+$//mg;
-$html_content =~ s/^<.*$//mg;
-$html_content =~ s/^[^0-9MDFS-].*//mg;
-$html_content =~ s/^(.\)|.....\:|Datum).*$//mg;
-$html_content =~ s/^-+//mg;
-$html_content =~ s/^\s+$//mg;
-$html_content =~ s/ +/ /mg;
-
-if ($semester < 8) {
-    for my $row (split("\n", parse_content($html_content, $major, $semester))) {
-        printf ("%-12s %10s %15s %-5s %-50s %-10s\n", split($delimiter, $row));
-    }
-} else {
-    for my $i (0..7) {
-        for my $row (split("\n", parse_content($html_content, $major, $i))) {
-            printf ("%-12s %10s %15s %-5s %-50s %-10s\n", split($delimiter, $row));
-        }
-        print "\n";
-    }
-}
-
-sub parse_content {
-    my @split_content       = split ("\n", $_[0]);
-    my $chosen_major        = $_[1];
-    my $chosen_semester     = $_[2];
-    my $output              = "";
-    my $current_semester;
-    my $day;
-    my $date;
-    my $time;
-    my $lecture;
-    my $room;
-
-    for my $line (@split_content) {
-        $line =~ s/^\s+//g;
-
-        if ($line =~ m/^([A-Z][a-z]+)/g) {
-            $day = $1;
-        }
-
-        if ($line =~ m/($chosen_major[1-7])/ig) {
-            $current_semester = $1;
-
-            my $tmp = $line;
-#weird bug? $line doesn't work on this one ?!?
-            if ($tmp =~ m/(\d+.\d+.\d+)\s+(\d+.\d+ \d+.\d+)/g) {
-                $date = $1;
-                $time = $2;
-            } 
-            if ($line =~ m/^(\d+,\d+ \d+,\d+)/g) {
-                $time = $1;
-            }
-            if ($line =~ m/$current_semester (.*?) ([A-H][0-9]{3}.*?)\s+$/g) {
-                $lecture = $1;
-                $room = $2;
-            } elsif ($line =~ m/$current_semester (.*?)\s+$/g) {
-                $lecture = $1;
-                $room    = "room not set";
-            }
-            
-            if ($current_semester eq $chosen_major.$chosen_semester) {
-                $output .= "$day $delimiter $date $delimiter $time $delimiter $chosen_major$chosen_semester $delimiter $lecture $delimiter $room $delimiter\n";
-            }
-        }
-    }
-    return $output;
-}
+rm $_filepdf $_filetext
