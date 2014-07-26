@@ -7,28 +7,28 @@ import mechanize
 import cookielib
 from bs4 import BeautifulSoup
 
-def average (url, browser):
+def average (url, browser) :
     temp = browser
     response = temp.open(url)
     soup = BeautifulSoup(response)
-    try:
+    try :
         table = soup.table.extract()
         table = soup.table.extract()
         table = soup.table.extract()
-    except (AttributeError, NameError, TypeError):
+    except (AttributeError, NameError, TypeError) :
         return "N/A"
 
-    for rows in table.findAll('tr'):
+    for rows in table.findAll('tr') :
         average_grade = ""
-        for columns in rows.findAll('td'):
+        for columns in rows.findAll('td') :
             average_grade += columns.getText()
     average_grade = re.sub("^\s+\w+\s", "", average_grade)
-    if len(average_grade) < 4:
+    if len(average_grade) < 4 :
         return average_grade
     else :
         return "N/A"
 
-def beautify (line):
+def beautify (line) :
     line = re.sub("\n", "", line)
     line = re.sub("^\s+", "", line)
     line = re.sub("\s*$", "", line)
@@ -39,7 +39,7 @@ def beautify (line):
 
     splitted = line.encode("utf-8").split("::")
     output         = ""
-    for n, word in enumerate(splitted):
+    for n, word in enumerate(splitted) :
         word = re.sub("^\s*", "", word)
         word = re.sub("\s*$", "", word)
         if n == 0 :
@@ -56,7 +56,7 @@ def beautify (line):
             output += ":: {0:>10s}".format(word)
     return output
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 2 :
     sys.exit('Usage: %s [username] [password]' % sys.argv[0])
 else :
     username = sys.argv[1]
@@ -95,24 +95,24 @@ soup                                = BeautifulSoup(response)
 table                               = soup.table.extract()
 table                               = soup.table.extract()
 
-for rows in table.findAll('tr'):
+for rows in table.findAll('tr') :
     line = ""
-    for columns in rows.findAll('td'):
+    for columns in rows.findAll('td') :
         line += columns.getText()
-        for link in columns.findAll('a'):
+        for link in columns.findAll('a') :
             url = link.get('href')
             line += "(Schnitt: " + average(url, browser) + ")"
         line +=  " :: "
-    if line != "":
+    if line != "" :
         line = beautify(line)
 
-    if re.search("Zwischen", line):
+    if re.search("Zwischen", line) :
         print line
-    if re.search("Studienabschnitt", line):
+    if re.search("Studienabschnitt", line) :
         print
         print line
         print
-    if not re.match("^\s*UIS-\d\d\s", line) and not re.match("^\s*UIS-\d\d\d\s", line):
+    if not re.match("^\s*UIS-\d\d\s", line) and not re.match("^\s*UIS-\d\d\d\s", line) :
         print line
 
 url                                 = browser.find_link(text_regex = re.compile(logout))
