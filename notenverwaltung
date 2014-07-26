@@ -5,6 +5,7 @@ import sys
 import string
 import mechanize
 import cookielib
+import unicodedata
 from bs4 import BeautifulSoup
 
 def average (url, browser) :
@@ -33,11 +34,12 @@ def beautify (line) :
     line = re.sub("^\s+", "", line)
     line = re.sub("\s*$", "", line)
     line = re.sub("\s\s+", " ", line)
-    line = re.sub("^(.*? :: .*? ::.*?::.*?::.*?::.*?::).*$", "\\1", line)
+    line = re.sub("^(.*?::.*?::.*?::.*?::.*?::.*?::).*$", "\\1", line)
     line = re.sub(" ::$", "", line)
     line = re.sub("^$", "", line)
 
-    splitted = line.encode("utf-8").split("::")
+    splitted = unicodedata.normalize('NFKD', line).encode('ascii','ignore').split("::")
+    #splitted = line.encode("utf-8").split("::")
     output         = ""
     for n, word in enumerate(splitted) :
         word = re.sub("^\s*", "", word)
